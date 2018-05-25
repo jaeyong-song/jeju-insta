@@ -1,7 +1,8 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   before_action :set_post, only: [:show, :edit, :update, :destroy]
-  before_action :is_writer, only: [:edit, :update, :destroy]
+  # before_action :is_writer, only: [:edit, :update, :destroy]
+  load_and_authorize_resource
 
   # GET /posts
   # GET /posts.json
@@ -63,6 +64,10 @@ class PostsController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  def mypage
+    @posts = current_user.posts
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -76,9 +81,9 @@ class PostsController < ApplicationController
     end
     
     # auth for writer
-    def is_writer
-      if @post.user != current_user
-        redirect_to "/posts", notice: '수정 및 삭제 권한이 없습니다.'
-      end
-    end
+    # def is_writer
+    #   if @post.user != current_user
+    #     redirect_to "/posts", notice: '수정 및 삭제 권한이 없습니다.'
+    #   end
+    # end
 end
