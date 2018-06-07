@@ -5,6 +5,12 @@ class Ability
     can :read, :all
     if user.present?
       can :manage, Post, user_id: user.id
+      can :like, Post
+      can :update, User, id: user.id
+      can :follow, User do |u|
+        u != user
+        # 로그인된 user와 u는 다른 사람이어야 한다!!
+      end
       if user.has_role?(:admin)
         can :manage, :all
       end

@@ -1,13 +1,32 @@
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
-  before_action :set_post, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :set_post, only: [:show, :edit, :update, :destroy, :like]
   # before_action :is_writer, only: [:edit, :update, :destroy]
   load_and_authorize_resource
 
   # GET /posts
   # GET /posts.json
   def index
-    @posts = Post.all
+    if params.has_key?(:content)
+      @posts = Post.where('content like ?', "%#{params[:content]}%")
+      # rails activerecord query(google)
+      # 모델 메소드
+      # 1. all
+      # 2. find(:id)
+      # 3. find([:id, :id])
+      # 4. where
+      # 5. where.not
+      # 6. order()
+      #   ex. Post.all.order(created_at: :desc / :asc)
+      # 7. first(n)
+      #   ex. Post.order(created_at: :desc).first(n)
+      # 8. last(n)
+      #   ex. Post.order(created_at: :asc).last(n)
+      # 9. limit(n) - order()와 함께 사용
+      
+    else
+      @posts = Post.where(user_id: current_user.followees.ids.push(current_user.id))
+    end
   end
 
   # GET /posts/1
@@ -67,6 +86,12 @@ class PostsController < ApplicationController
   
   def mypage
     @posts = current_user.posts
+  end
+  
+  # POST 'posts/:id/like'
+  def like
+    @post.toggle_like(current_user)
+    redirect_back(fallback_location: root_path)
   end
 
   private

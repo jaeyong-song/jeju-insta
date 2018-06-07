@@ -2,7 +2,7 @@
 
 <p>
   <strong>user:</strong>
-  <%= @post.user.name %>
+  <%= link_to @post.user.name, @post.user %>
 </p>
 
 <p>
@@ -14,6 +14,14 @@
   <strong>Content:</strong>
   <%= @post.content %>
 </p>
+
+<p>
+  <strong>liked:</strong>
+  <%= @post.likes.count %>
+</p>
+<!--헬퍼 사용-->
+<%= like_button(@post, current_user) %>
+
 <% if can? :manage, @post %>
 <%= link_to 'Edit', edit_post_path(@post) %> |
 <% end %>
